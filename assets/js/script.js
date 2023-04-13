@@ -56,10 +56,16 @@ console.log(date)
 console.log(temp)
 
 
+async function getWeather(city){
+  
+}
 
-//var weatherData = {"coord":{"lon":-81.6954,"lat":41.4995},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"stations","main":{"temp":277.29,"feels_like":276.06,"temp_min":274.57,"temp_max":280.18,"pressure":1030,"humidity":68},"visibility":10000,"wind":{"speed":1.54,"deg":100},"clouds":{"all":0},"dt":1681100474,"sys":{"type":2,"id":2016542,"country":"US","sunrise":1681124108,"sunset":1681171242},"timezone":-14400,"id":5150529,"name":"Cleveland","cod":200}
-function getWeather(){
-  city = getCity();
+
+
+
+
+async function getForecast(city){
+  
   queryUrl ='https://api.openweathermap.org/data/2.5/weather?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
 }
     if (city) {
@@ -83,10 +89,10 @@ function getWeather(){
 var datejs;
 // for(var i = 0; i< weatherData.list.length ;i++) {
 
-var forStorage = [1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,]
+var forStorage = [1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,]
 for(var i = 5; i< 38 ;i+=8){
 console.log(date)
-//  console.log (date[i].text())
+console.log (forStorage)
 console.log(weatherData.list.length)
 datejs=(dayjs.unix(weatherData.list[i].dt).format('MMM D, YYYY'));
 console.log(this.temp);
@@ -95,7 +101,7 @@ console.log (this.date);
 this.date[i].text(datejs);
 console.log (datejs);
 forStorage[i] = datejs;
-imageIcon = 'https://openweathermap.org/img/wn/'+weatherData.list[i].weather[0].icon+'@2x.png'
+imageIcon = 'https://openweathermap.org/img/wn/'+weatherData.list[i].weather[0].icon+'@2x.png';
 console.log(imageIcon);         
 image[i].attr('src',imageIcon);
 forStorage[i+1]= imageIcon
@@ -112,23 +118,21 @@ this.wind[i].text(displayWind);
 var weatherhumid = weatherData.list[i].main.humidity
 var displayHumid = weatherhumid +"%"
 console.log (displayHumid) 
-this.humidity[i].text(displayHumid)
-forStorage[i=4]=displayHumid;
-console.log(Math.round(weatherData.list[i].wind.speed))
-console.log(weatherData.list[i].main.humidity)
-          
-imageIcon = 'https://openweathermap.org/img/wn/'+weatherData.list[i].weather[0].icon+'@2x.png'
-console.log(imageIcon)
-this.image[i].attr('src',imageIcon);
-var temp = weatherData.list[0].temp
-var date = weatherData.dt
-console.log (temp)
-var unixFormat = dayjs.unix(date).format('MMM D, YYYY');
-console.log (date)
-console.log (unixFormat)
-var fahrenheit = Math.round((temp-273.15)*9/5+32)
-console.log (fahrenheit)
-console.log(forStorage)}});
+humidity[i].text(displayHumid)
+forStorage[i+4]=displayHumid;
+}      
+console.log(forStorage)
+saveStorage = {
+  "Day1": [forStorage[5],forStorage[6],forStorage[7],forStorage[8],forStorage[9]],
+  "Day2": [forStorage[13],forStorage[14],forStorage[15],forStorage[16],forStorage[17]],
+  "Day3": [forStorage[21],forStorage[22],forStorage[23],forStorage[24],forStorage[25]],
+  "Day4": [forStorage[29],forStorage[30],forStorage[31],forStorage[32],forStorage[33]],
+  "Day1": [forStorage[37],forStorage[38],forStorage[39],forStorage[40],forStorage[41]]
+ };
+console.log(saveStorage);
+localStorage.setItem((city),JSON.stringify(saveStorage));
+console.log(saveStorage);
+});
 //searchbtn.addEventListener ("click", fuction(e){
  //stopDefault(e)
 //});
