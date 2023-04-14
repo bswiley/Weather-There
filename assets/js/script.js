@@ -15,6 +15,7 @@ var cityList    = ["safeWord"]
 var bHumid      = $("bHumid");
 var bWind       = $("bWind");
 var bTemp       = $("bTemp");
+bTemp.tex
 var cityDate    = $("#cityDate");
 var bImage      = $("#bImage");
 var searchfrm   = $("#searchfrm");
