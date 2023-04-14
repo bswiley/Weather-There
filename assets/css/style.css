@@ -48,6 +48,7 @@
    }  
     button {
   appearance: button;
+  width: fit-content;
   backface-visibility: hidden;
   background-color: #405cf5;
   border-radius: 6px;

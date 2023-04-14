@@ -3,65 +3,94 @@ var image = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3
 var temp = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]
 var wind = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]
 var humidity = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]
-var submit = $(".searchbtn")
-var formContent = $("#searchfrm")
-var buttonList = $("#buttonList")
+var submit = $(".searchbtn");
+var formContent = $("#searchfrm");
+var buttonList = $("#buttonList");
 var cityList =["safeWord"]
-var bHumidity = $("bHumidity")
-var bWind = $("bWind")
-var bTemp = $("bTemp")
-var cityDate = $("#cityDate")
+var bHumidity = $("bHumidity");
+var bWind = $("bWind");
+var bTemp = $("bTemp");
+var cityDate = $("#cityDate");
 var bImage = $("#bImage");
-var searchfrm = $("#searchfrm")
-var searchbtn = $("#searchbtn")
-var cCity = $("#currentCity")
-var cList = $("#oldCityList")
-var oCity1 = $("#oldCity1")
-var oCity2 = $("#oldCity2")
-var oCity3 = $("#oldCity3")
-var oCity4 = $("#oldCity4")
-var oCity5 = $("#oldCity5")
-var oCity6 = $("#oldCity6")
-var oCity7 = $("#oldCity7")
-var oCity8 = $("#oldCity8")
-var oCity9 = $("#oldCity9")
-var oCity10 = $("#oldCity10")
-var card1 = $("card1")
-var card2 = $("card2")
-var card3 = $("card3")
-var card4 = $("card4")
-var card5 = $("card5")
- date[5] = $("#date0")
- image[5] =$("#image0")
- temp[5] = $("#temp0")
- wind[5] =$("#wind0")
-humidity[5] = $("#humidity0")
-date[13] =$("#date1")
-image[13] =$("#image1")
-temp[13] = $("#temp1")
-wind[13] =$("#wind1")
-humidity[13] = $("#humidity1")
-date[21] =$("#date2")
-image[21]=$("#image2")
-temp[21] = $("#temp2")
-wind[21] =$("#wind2")
-humidity[21] = $("#humidity2")
-date[29] =$("#date3")
-image[29] =$("#image3")
-temp[29] = $("#temp3")
-wind[29] =$("#wind3")
-humidity[29] = $("#humidity3")
-date[37] =$("#date4")
-image[37] =$("#image4")
-temp[37] = $("#temp4")
-wind[37] =$("#wind4")
-humidity[37] = $("#humidity4")
+var searchfrm = $("#searchfrm");
+var searchbtn = $("#searchbtn");
+var cCity = $("#currentCity");
+var cList = $("#oldCityList");
+var oCity1 = $("#oldCity1");
+var oCity2 = $("#oldCity2");
+var oCity3 = $("#oldCity3");
+var oCity4 = $("#oldCity4");
+var oCity5 = $("#oldCity5");
+var oCity6 = $("#oldCity6");
+var oCity7 = $("#oldCity7");
+var oCity8 = $("#oldCity8");
+var oCity9 = $("#oldCity9");
+var oCity10 = $("#oldCity10");
+var card1 = $("card1");
+var card2 = $("card2");
+var card3 = $("card3");
+var card4 = $("card4");
+var card5 = $("card5");
+ date[5] = $("#date0");
+ image[5] =$("#image0");
+ temp[5] = $("#temp0");
+ wind[5] =$("#wind0");
+humidity[5] = $("#humidity0");
+date[13] =$("#date1");
+image[13] =$("#image1");
+temp[13] = $("#temp1");
+wind[13] =$("#wind1");
+humidity[13] = $("#humidity1");
+date[21] =$("#date2");
+image[21]=$("#image2");
+temp[21] = $("#temp2");
+wind[21] =$("#wind2");
+humidity[21] = $("#humidity2");
+date[29] =$("#date3");
+image[29] =$("#image3");
+temp[29] = $("#temp3");
+wind[29] =$("#wind3");
+humidity[29] = $("#humidity3");
+date[37] =$("#date4");
+image[37] =$("#image4");
+temp[37] = $("#temp4");
+wind[37] =$("#wind4");
+humidity[37] = $("#humidity4");
 
+var today = dayjs().format('YYYYMMDD');
+
+//var citiesToday = {today:
+//["Cleveland","Detroit","Atlanta","San Francisco"]
+//  };
+//console.log(citiesToday);
+
+//localStorage.setItem(today, JSON.stringify(today+":"+["Cleveland","Atlanta","Detroit","San Francisco"]));
+
+
+
+
+if (localStorage.getItem(today)===null){
+  var storage = false
+} 
+else {
+  var storage = true
+  var storedCities = JSON.parse(localStorage.getItem(today))
+  var storedCitiesArray = storedCities["Cities"]
+  var storedCitiesNum = storedCitiesArray.length;
+
+console.log(storedCitiesNum)
+  for (var i=0 ; i<4 ; i++){
+    city = storedCitiesArray[i]
+    cityList.push(city);
+    var buttonEl =$("<button>");
+    buttonEl.addClass(city).text(city);
+    buttonEl.appendTo($("#buttonList"));
+  };
 
 
 
 function handleSubmit(){
-   city = formContent.val()
+   city = formContent.val();
    makeCityButton(city);
 };
 
@@ -70,23 +99,28 @@ var makeCityButton = function(city){
       console.log (city, cityList, cityList.includes(city));
       return;
     }
-    cityList.push(city)
+    cityList.push(city);
     var buttonEl =$("<button>");
     buttonEl.addClass(city).text(city);
-    buttonEl.appendTo($("#buttonList"))
+    buttonEl.appendTo($("#buttonList"));
     getForecast(city);
-    getWeather(city);
-    
+    getWeather(city); 
 }
 
 buttonList.click(function(event){
-var activeOldCity = event.target.className;
-console.log(activeOldCity)
+var activeOldCity = event.target.className
+getForecast(activeOldCity);
+loadData(activeOldCity);
+});
 
 
-})
-function handleClick(){
-}
+function loadData(city){
+console.log(city)
+var data =   JSON.parse(localStorage.getItem(city))
+console.log (data);
+for (var i = 0;i<4 ;i++ ){
+  pass
+}}
 
 async function getWeather(city){
   queryUrl ='https://api.openweathermap.org/data/2.5/weather?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
@@ -217,6 +251,3 @@ console.log(saveStorage);
 
 
 submit.on("click",handleSubmit);
-
-
- 
