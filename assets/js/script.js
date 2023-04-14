@@ -3,10 +3,15 @@ var image = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3
 var temp = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]
 var wind = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]
 var humidity = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]
-
-
-
-
+var submit = $(".searchbtn")
+var formContent = $("#searchfrm")
+var buttonList = $("#buttonList")
+var cityList =["safeWord"]
+var bHumidity = $("bHumidity")
+var bWind = $("bWind")
+var bTemp = $("bTemp")
+var cityDate = $("#cityDate")
+var bImage = $("#bImage");
 var searchfrm = $("#searchfrm")
 var searchbtn = $("#searchbtn")
 var cCity = $("#currentCity")
@@ -26,7 +31,6 @@ var card2 = $("card2")
 var card3 = $("card3")
 var card4 = $("card4")
 var card5 = $("card5")
-var city = "Cleveland"
  date[5] = $("#date0")
  image[5] =$("#image0")
  temp[5] = $("#temp0")
@@ -52,30 +56,107 @@ image[37] =$("#image4")
 temp[37] = $("#temp4")
 wind[37] =$("#wind4")
 humidity[37] = $("#humidity4")
-console.log(date)
-console.log(temp)
 
 
-async function getWeather(city){
-  
+
+
+function handleSubmit(){
+   city = formContent.val()
+   makeCityButton(city);
+};
+
+var makeCityButton = function(city){
+    if(cityList.includes(city)){
+      console.log (city, cityList, cityList.includes(city));
+      return;
+    }
+    cityList.push(city)
+    var buttonEl =$("<button>");
+    buttonEl.addClass(city).text(city);
+    buttonEl.appendTo($("#buttonList"))
+    getForecast(city);
+    getWeather(city);
+    
 }
 
+buttonList.click(function(event){
+var activeOldCity = event.target.className;
+console.log(activeOldCity)
 
+
+})
+function handleClick(){
+}
+
+async function getWeather(city){
+  queryUrl ='https://api.openweathermap.org/data/2.5/weather?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
+
+    if (city) {
+      queryUrl = 'https://api.openweathermap.org/data/2.5/weather?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
+    }
+
+    fetch(queryUrl,date,temp,wind,humidity)
+      .then(function (response) {
+        if (!response.ok) {
+          throw response.json();
+        }
+  
+        return response.json();
+      })
+    .then(function (weatherData) {
+        console.log(weatherData)
+      
+var datejs;
+
+var forStorage =[0,1,2,3,4]
+datejs=(dayjs.unix(weatherData.dt).format('MMM D, YYYY'));
+dateCity = city+" -- "+datejs
+console.log(dateCity)
+this.cityDate.text(dateCity);
+forStorage[0] = dateCity;
+console.log(forStorage);
+imageIcon = 'https://openweathermap.org/img/wn/'+weatherData.weather[0].icon+'@2x.png';
+console.log(imageIcon);         
+this.bImage.attr('src', imageIcon);
+forStorage[1] = imageIcon;
+console.log (forStorage);
+var weatherTemp = weatherData.main.temp;
+var displayTemp = Math.round((weatherTemp-273.15)*9/5+32)+"°F";
+console.log(displayTemp);
+forStorage[2] = displayTemp
+this.bTemp.text(displayTemp);
+var weatherWind = weatherData.wind.speed
+var displayWind = Math.round(weatherWind*2.237)+"MPH"
+console.log (displayWind);
+forStorage[3]= displayWind;
+this.bWind.text(displayWind);
+console.log(forStorage);
+var weatherhumid = weatherData.main.humidity
+var displayHumid = weatherhumid +"%"
+console.log (displayHumid) 
+this.bHumidity.text(displayHumid)
+forStorage[4]=displayHumid;   
+console.log(forStorage)
+saveStorage = {
+  weather: [forStorage[0],forStorage[1],forStorage[3],forStorage[4],forStorage[5]]
+  }
+console.log(saveStorage);
+localStorage.setItem((city+'0'),JSON.stringify(saveStorage));
+console.log(saveStorage);
+})}; 
 
 
 
 async function getForecast(city){
-  
-  queryUrl ='https://api.openweathermap.org/data/2.5/weather?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
-}
+
+  queryUrl ='https://api.openweathermap.org/data/2.5/forecast?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
+
     if (city) {
       queryUrl = 'https://api.openweathermap.org/data/2.5/forecast?q='+city+'&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
     }
   
-  console.log(date)
-  console.log(temp)
-  console.log(image)
-    fetch(queryUrl,date,temp,wind,humidity)
+  console.log (city)
+    fetch(queryUrl)
       .then(function (response) {
         if (!response.ok) {
           throw response.json();
@@ -123,31 +204,19 @@ forStorage[i+4]=displayHumid;
 }      
 console.log(forStorage)
 saveStorage = {
-  "Day1": [forStorage[5],forStorage[6],forStorage[7],forStorage[8],forStorage[9]],
-  "Day2": [forStorage[13],forStorage[14],forStorage[15],forStorage[16],forStorage[17]],
-  "Day3": [forStorage[21],forStorage[22],forStorage[23],forStorage[24],forStorage[25]],
-  "Day4": [forStorage[29],forStorage[30],forStorage[31],forStorage[32],forStorage[33]],
-  "Day1": [forStorage[37],forStorage[38],forStorage[39],forStorage[40],forStorage[41]]
+  "Day0": [forStorage[5],forStorage[6],forStorage[7],forStorage[8],forStorage[9]],
+  "Day1": [forStorage[13],forStorage[14],forStorage[15],forStorage[16],forStorage[17]],
+  "Day2": [forStorage[21],forStorage[22],forStorage[23],forStorage[24],forStorage[25]],
+  "Day3": [forStorage[29],forStorage[30],forStorage[31],forStorage[32],forStorage[33]],
+  "Day4": [forStorage[37],forStorage[38],forStorage[39],forStorage[40],forStorage[41]]
  };
 console.log(saveStorage);
 localStorage.setItem((city),JSON.stringify(saveStorage));
 console.log(saveStorage);
-});
-//searchbtn.addEventListener ("click", fuction(e){
- //stopDefault(e)
-//});
+})};
 
 
-function stopDefault(e){
-  e.preventDefault();
-  getWeather();
-}
-
-function getCity(){
-  city=searchfrm.val();
-  ci
-}
-
+submit.on("click",handleSubmit);
 
 
  
