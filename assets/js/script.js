@@ -11,7 +11,9 @@ var humid2 = [0, 1, 2, 3, 4]
 var submit = $(".searchbtn");
 var formContent = $("#searchfrm");
 var buttonList = $("#buttonList");
-var cityList = ["safeWord"]
+var cityList = ["Safeword","Safeword2"];
+console.log(cityList)
+var cityListNum;
 var bHumid = $("#bHumid");
 var bWind = $("#bWind");
 var bTemp = $("#bTemp");
@@ -63,7 +65,6 @@ wind[37] = wind2[4] = $("#wind4");
 humid[37] = humid2[4] = $("#humid4");
 
 
-
 var today = dayjs().format('YYYYMMDD');
 
 //var citiesToday = {today:
@@ -75,10 +76,14 @@ var today = dayjs().format('YYYYMMDD');
 
 
 /*This is the start of the actual code where it searches for cities stored in 
-localStorage already today.  If it doesn't find anything it is marked as "false"
-and if it is true it parses out the cities into a list for use
+localStorage already today.  If it doesn't find any local storage it doesn't do
+anything, but if it does it populates the buttons with the city names making them
+ready for use.  After that the code ends and the only thing that can happen next is 
+the reaction to an eventhandler/listener. 
 */
 if (!localStorage.getItem(today)) {
+  console.log(!localStorage.getItem(today))
+  console.log(today)
   var storage = false
 }
 else {
@@ -86,44 +91,61 @@ else {
   var storedCities = JSON.parse(localStorage.getItem(today));
   console.log(storedCities["cities"]);
   var storedCitiesArray = storedCities["cities"];
-  console.log(storedCitiesArray);
-  var storedCitiesNum = storedCitiesArray.length;
+  var storedCitiesList = [...new Set(storedCitiesArray)]
+  console.log(storedCitiesList);
+  var storedCitiesNum = storedCitiesList.length;
   for (var i = 0; i < storedCitiesNum; i++) {
-    city = storedCitiesArray[i]
-    cityList.push(city);
-
+    city = storedCitiesList[i]
+    cityList = storedCitiesList;
+    console.log(cityList)
     var buttonEl = $("<button>");
     buttonEl.addClass(city).text(city);
     buttonEl.appendTo($("#buttonList"));
   }
 };
 
-
-
+/* This function is that operates after the Submit button's 
+eventListener sends it here.  It mainly gets the information 
+from the form and passes it down to the "makeCityButton" 
+function below
+*/
 function handleSubmit() {
   city = formContent.val();
   makeCityButton(city);
 };
-
+/* This function takes the "city" information passed from the 
+above function to make a button for the city name in the 
+form field.  After making the button on the page it also 
+initiates the correct function to create or add the city to the 
+localStorage and then initates the functions to get the current
+conditions and the five-day weather forcast for that city.
+If the button already exists it doesn't add the button because it
+is already present. 
+*/
 var makeCityButton = function (city) {
   if (cityList.includes(city)) {
     console.log(city, cityList, cityList.includes(city));
+    getForecast(city);
+    getWeather(city);
     return;
   }
   else if (!cityList.includes(city)) {
     console.log("xxxxxxxxxxx", typeof (cityList))
     cityList.push(city);
-    console.log(cityList)
+    console.log(cityList, typeof(cityList),cityList.length)
+      cityList
+    }
     var buttonEl = $("<button>");
     buttonEl.addClass(city).text(city);
     buttonEl.appendTo($("#buttonList"));
     if (storage === true) {
       if (cityList.length > 1) {
-        cityList2 = cityList.shift()
-        cityList = cityList2
+        index = cityList.indexOf("safeword")
+        x = cityList.splice(index, 1);
         console.log(cityList)
+        AddCity(city);
       }
-      AddCity(city);
+      
     }
     if (storage === false) {
       storage = true
@@ -132,28 +154,34 @@ var makeCityButton = function (city) {
     getForecast(city);
     getWeather(city);
   }
-}
-
+//}
+/* The MakeCityButton sends to here.  Since there is nothing in localStorage for "Today"
+an entry will be made and the one city passed to the function is the loan city 
+saved to storage*/ 
 function StoreCity(city) {
-  var savestring = {
+  var saveString = {
     "cities": [city]
   }
-  console.log(savestring);
-  localStorage.setItem(today, JSON.stringify(savestring));
+  console.log(saveString);
+  localStorage.setItem(today, JSON.stringify(saveString));
 }
-
+/*The MakeCitybutton send to hear if there are already cities in local storage.  
+Since that is the case, it pulls the cities from local storage, adds the recently added
+city and stores everything back in localStorage*/
 function AddCity(city) {
-
+  console.log(city)
   var storedString = JSON.parse(localStorage.getItem(today));
   console.log(storedString.cities)
-  var oldCities = storedString.cities
-  console.log(oldCities);
-  var allCities = oldCities.push(city);
+  var oldCities = storedString["cities"]
+  console.log(oldCities.push(city));
+  oldCities.push(city);
+  console.log(oldCities)
+  var allCities = [...new Set(oldCities)]
   console.log("xxxxxxxxxx", allCities);
-  savestring = {
+  saveString = {
     "cities": allCities
   };
-  localStorage.setItem(today, JSON.stringify(savestring))
+  localStorage.setItem(today, JSON.stringify(saveString))
 }
 
 
@@ -166,6 +194,10 @@ buttonList.click(function (event) {
 
 function loadData(city) {
   console.log(city)
+  if (!localStorage.getItem(city)){
+    getForecast(city);
+    getWeather(city);
+  }
   var data = JSON.parse(localStorage.getItem(city))
   console.log(data);
   data = data.city;
