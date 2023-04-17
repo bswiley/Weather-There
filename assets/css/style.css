@@ -8,6 +8,7 @@
   
   .grid-container > div {
     text-align: center;
+
     padding: 20px 0;
     font-size: 30px;
   }
@@ -25,7 +26,20 @@
       border-radius: 10px;
       width: fit-content;
     }
-    
+  #bigCard {
+    text-align: center;
+  }
+ h3 {
+  display: inline-block;
+    text-align: center;
+   } 
+#bWind, #bHumid, #bTemp{
+  color: black;
+  display: inline-block;
+  color: black;
+  
+}
+  
     #cardContainer {
       display: flex;
       flex-direction: row;

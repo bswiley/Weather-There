@@ -212,10 +212,6 @@ function loadData(city) {
     console.log(weather);
     console.log(i);
     console.log(date);
-    cityDate.text("Hello")
-    bTemp.text("hello")
-    bHumid.text("hello")
-    bWind.text("hello")
     console.log(weather[0]);
     console.log(weather[1]);
     console.log(weather[2]);
