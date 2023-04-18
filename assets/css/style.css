@@ -40,7 +40,6 @@
     text-align: center;
    } 
 #bWind, #bHumid, #bTemp{
-  color: black;
   display: inline-block;
   color: black;
   
@@ -49,14 +48,24 @@
     #cardContainer {
       display: flex;
       flex-direction: row;
+      justify-content: flex-start;
       flex-wrap: wrap;
     }
     .card {
+      display: flex;
+      justify-content: flex-start;
       width: 20%;
       background-color: blue;
       color: white;
       border-color: white;
       text-align: left;
+    }
+    .cardtext {
+      display: inline-block;
+      text-align: left;
+    }
+    #temp0, #temp1, #temp2, #temp3, #temp4, #wind0, #wind1, #wind2, #wind3, #wind4, #humid0, #humid1, #humid2, #humid3, #humid4{
+      display: inline-block;
     }
     img {
       width: 100px;
