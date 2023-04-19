@@ -19,7 +19,6 @@ var submit = $(".searchbtn");
 var formContent = $("#searchfrm");
 var buttonList = $("#buttonList");
 var cityList = ["Safeword","Safeword2"];
-console.log(cityList)
 var cityListNum;
 var datejs;
 var bHumid = $("#bHumid");
@@ -74,8 +73,9 @@ humid[37]= humid2[4] = $("#humid4");
 var today = dayjs().format('YYYYMMDD');
 
 
-/*This function makes a call to openweather just to test if it will work.  If it doesn't work an alert is sent up and a button 
-isn't created*/
+/*This function makes a call to openweather just to test if it will work (i.e. that the user typed a 
+a real city).  If it doesn't work an alert is sent up and a button isn't created.  If the connection is 
+good it sends on to makeCityButton() with the good city name included. */
 async function testCity(city) {
   var Url = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
   fetch(Url)
@@ -83,152 +83,102 @@ async function testCity(city) {
       if (!response.ok) {
         alert("That doesn't appear to be a city.  Are you sure you spelled it correctly?  If not, please try it again")
         throw response.json();
-}else{
-  makeCityButton(city)
-}})}
-  /*
- 
- $('#ajaxBtn').click(function(){
-    $.ajax('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12',{     
-      success: function (data, status, xhr) {    // success callback function
-        console.log(success.ok)}
-    })});console.log(success.ok)};
- 
- 
-
-  $.ajax('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
-{
-  success: function (data, status, xhr) {    // success callback function
-    $('p').append(data);
-}
-})}
-
+}else{makeCityButton(city,true)}})}
   
-        const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12');
-        const jsonData = await response.json();
-        if (response.ok){
-          console.log (response.ok)
-          makeCityButton(city, true);
-        }
-        else{
-          console.log(respons.ok)
-          makeCityButton(city, false);
-        }
-      }
 
-/*
-
-/*This is the start of the actual code where it searches for cities that may have
-been stored in localStorage already today.  If it doesn't find any local storage it
-doesn't do anything, but if it does it populates the buttons with the city names
-making them ready for use.  After that the code ends and the only thing that can
-happen next is the reaction to an eventhandlers/listeners. 
+/*This is the start of the actual (i.e. not part of a function) code where it 
+searches for cities that may have been stored in localStorage already today.  
+If it doesn't find any local storage it doesn't do anything, but if it does it
+populates the buttons with the city names making them ready for use.  After that
+the code ends and the only thing that can happen next is the reaction to an 
+eventhandler/listener. 
 */
 if (!localStorage.getItem(today)) {
-  console.log(!localStorage.getItem(today))
   localStorage.clear();
-  var storage = false
-}
+    var storage = false}
 else {
   var storage = true
   var storedCities = JSON.parse(localStorage.getItem(today));
-  console.log(storedCities["cities"]);
   var storedCitiesArray = storedCities["cities"];
   var storedCitiesList = [...new Set(storedCitiesArray)]
-  console.log(storedCitiesList);
   var storedCitiesNum = storedCitiesList.length;
   for (var i = 0; i < storedCitiesNum; i++) {
     city = storedCitiesList[i]
     cityList = storedCitiesList;
-    console.log(cityList)
     var buttonEl = $("<button>");
     buttonEl.addClass(city).text(city);
-    buttonEl.appendTo($("#buttonList"));
-  }
-};
+    buttonEl.appendTo($("#buttonList"));}};
 
-/* This function is that operates after the Submit button's 
-eventListener sends it here.  It mainly gets the user's city
-information from the form and passes it down a capitalized
-the version of the city to the "makeCityButton" function below. 
+
+/* This is the function is that operates after the Submit button's 
+eventListener sends it here.  It mainly just gets the user's city
+information from the form and passes it to toTitleCase() to be 
+capitalized before being sent on to testCity() to verify it's a 
+real city before a button is made.  
 */
 function handleSubmit() {
   city = formContent.val();
   city = toTitleCase(city);
-  testCity(city);
-};
-/* This function takes the "city" information passed from the 
-above function to make a button for the city name from the 
-form field.  After making the button on the page it also 
-initiates the correct function to create a localStorage location for 
-the city or add the city to the localStorage list that already exits
-and then initates the functions to get the current conditions and 
-the five-day weather forcast for that city. If the button already exists
-it doesn't add another button. 
-*/
+  testCity(city);};
+
+
+  /* This function takes the "city" information passed from the 
+testCity() function to make a button for the city name from the 
+form field after its been capitalized and checked.  After making
+the button on the page it also initiates the correct function to 
+create a localStorage entry for today for with the city's name or
+add the city to the localStorage list that already exits and then
+initates the functions to get the current conditions and the 
+five-day weather forcast for that city. If the button already exists
+it doesn't add another button. */
 var makeCityButton = function (city,test) {
         if (cityList.includes(city)) {
-    console.log(city, cityList, cityList.includes(city));
     getForecast(city);
     getWeather(city);
-    return;
-  }
+    return;}
   else if (!cityList.includes(city)) {
-    console.log("xxxxxxxxxxx", typeof (cityList))
-    cityList.push(city);
-    console.log(cityList, typeof(cityList),cityList.length)
-      cityList
-    }
+    cityList.push(city);}
     var buttonEl = $("<button>");
     buttonEl.addClass(city).text(city);
     buttonEl.appendTo($("#buttonList"));
     if (storage === true) {
-      if (cityList.length > 1) {
-        index = cityList.indexOf("safeword")
+      if (cityList.length >= 2) {
+        index = cityList.indexOf("Safeword") //this removes the superflous words
+        x = cityList.splice(index, 1);       // from 
+        index = cityList.indexOf("Safeword2")//the cityList array
         x = cityList.splice(index, 1);
-        console.log(cityList)
-        AddCity(city);
-      }
-      
-    }
+       AddCity(city);}}
     if (storage === false) {
       storage = true
-      StoreCity(city);
-    }
+      StoreCity(city);}
     getForecast(city);
-    getWeather(city);
-  }
-//}
-/* The MakeCityButton sends to here.  Since there is nothing in localStorage for 
-"Today" an entry will be made and the one city passed to the function is the
-lone city saved to storage.*/ 
+    getWeather(city);}
+
+
+/* The MakeCityButton() sends to here when there isn't a city by the variable name "city"
+stored in localStorage for "today". An entry will be made and the city passed to the function
+becoming the only city that exists in localStorage.*/ 
 function StoreCity(city) {
   var saveString = {
-    "cities": [city]
-  }
-  console.log(saveString);
-  localStorage.setItem(today, JSON.stringify(saveString));
-}
-/*The MakeCitybutton sends to here if there are already cities in local storage.  
+    "cities": [city]}
+  localStorage.setItem(today, JSON.stringify(saveString));}
+
+
+/*The MakeCitybutton() sends to here if there are already cities in local storage.  
 Since that is the case, it pulls the cities from local storage, adds the recently 
-added city and stores everything back in localStorage*/
+added city to the array and stores everything back in localStorage*/
 function AddCity(city) {
-  console.log(city)
   var storedString = JSON.parse(localStorage.getItem(today));
-  console.log(storedString.cities)
   var oldCities = storedString["cities"]
-  console.log(oldCities.push(city));
   oldCities.push(city);
-  console.log(oldCities)
   var allCities = [...new Set(oldCities)]//this prevents duplicates in localStorage
-  console.log("xxxxxxxxxx", allCities);
   saveString = {"cities": allCities};
   localStorage.setItem(today, JSON.stringify(saveString))}
 
 
-/*this is the eventlistner/handler for the buttons, if they have been created.
-After a 'click' the city is saved from the button that was clicked and used
-in the loadData function that is called at the end*/
+/*this is the eventlistner/handler for the city buttons that are created for the user,
+if they exist. After a 'click' the city name is collected from the button that was clicked
+and sent forward to the loadData() function that is called at the end*/
 buttonList.click(function (event) {
   var activeOldCity = event.target.className
    var currentCity = toTitleCase(activeOldCity);
@@ -247,16 +197,14 @@ buttonList.click(function (event) {
 
 /* This function pulls the city's forecast data from localStorage and populates
 it to the html and calls the function to get the current weather.  If it can't 
-find data for the city, it creates new forecast weather as well*/
+find data for the city, it forwards it to getForecast to create new forecast 
+weather.*/
 function loadData(city) {
-  console.log(city)
   if (!localStorage.getItem(city)){
     getForecast(city);
     getWeather(city);}
   var data = JSON.parse(localStorage.getItem(city))
-  console.log(data);
   data = data.city;
-  console.log(data);
   for (var i = 0; i < 5; i++) {
     var weather = data[i];
     date2[i].text(weather[0]);
@@ -266,124 +214,81 @@ function loadData(city) {
     humid2[i].text(weather[4]);
     getWeather(city);};}
 
-/*This is the eventhandler for the submit button which initiates several other 
-functions via the handleSubmit function*/
-submit.on("click", handleSubmit);
 
-/*This is the function that pulls the weather.  Since the variables created in it
-are limited to the function, it also populates the html elements.*/
+
+/*This is the function that pulls the weather from the weather API.  Since the variables created in it
+are limited to the function, it also populates the html elements from here.*/
 async function getWeather(city) {
   queryUrl = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
   fetch(queryUrl)
     .then(function (response) {
       if (!response.ok) {
-        alert("I am having problem connecting to the weather service.  Please try again later.")
-        throw response.json();
-
-        alert("I am having problem connecting to the weather service.  Please try again later.")
-      }
-      return response.json();
-    })
+        alert("I am having problem connecting to the weather service.  Please push the button again later.")
+      throw response.json();}
+      return response.json();})
     .then(function (weatherData) {
       datejs = (dayjs.unix(weatherData.dt).format('MMM D, YYYY'));
       dateCity = city + " -- " + datejs
-      console.log(dateCity)
       this.cityDate.text(dateCity);
       forStorage[0] = dateCity;
-      console.log(forStorage);
       imageIcon = 'https://openweathermap.org/img/wn/' + weatherData.weather[0].icon + '@2x.png';
-      console.log(imageIcon);
       this.bImage.attr('src', imageIcon);
       forStorage[1] = imageIcon;
-      console.log(forStorage);
       var weatherTemp = weatherData.main.temp;
       var displayTemp = Math.round((weatherTemp - 273.15) * 9 / 5 + 32) + "°F";
-      console.log(displayTemp);
       forStorage[2] = displayTemp
       this.bTemp.text(displayTemp);
       var weatherWind = weatherData.wind.speed
       var displayWind = Math.round(weatherWind * 2.237) + "MPH"
-      console.log(displayWind);
       forStorage[3] = displayWind;
       this.bWind.text(displayWind);
-      console.log(forStorage);
       var weatherhumid = weatherData.main.humidity
       var displayHumid = weatherhumid + "%"
-      console.log(displayHumid)
       this.bHumid.text(displayHumid)
       forStorage[4] = displayHumid;
-      console.log(forStorage)
       saveStorage = {
-        weather: [forStorage[0], forStorage[1], forStorage[3], forStorage[4], forStorage[5]]
-      }
-      console.log(saveStorage);
-      localStorage.setItem((city + '0'), JSON.stringify(saveStorage));
-      console.log(saveStorage);
-    })
-};
+        weather: [forStorage[0], forStorage[1], forStorage[3], forStorage[4], forStorage[5]]}
+      localStorage.setItem((city + '0'), JSON.stringify(saveStorage));})};
 
+/* this function does a similar job as getWeather() but it gets pulls from the API to get all five
+days of the forcast.  Again, since the variables are suck to this function due to scoping, setting
+the html elemsnts is also done from this function and the data is saved in localStorage*/
 async function getForecast(city) {
-
   queryUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
-
-  if (city) {
-    queryUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&APPID=c678bf4ba5b2185e3326c14c3b82bf12'
-  }
-
-  console.log(city)
   fetch(queryUrl)
     .then(function (response) {
       if (!response.ok) {
-        throw response.json();
-      }
-
-      return response.json();
-    })
+      throw response.json();}
+      return response.json();})
     .then(function (weatherData) {
-      console.log(weatherData)
-
-     
       for (var i = 5; i < 38; i += 8) {
-        console.log(date)
-        console.log(forStorage)
-        console.log(weatherData.list.length)
         datejs = (dayjs.unix(weatherData.list[i].dt).format('MMM D, YYYY'));
-        console.log(this.temp);
-        console.log(this.image);
-        console.log(this.date);
         this.date[i].text(datejs);
-        console.log(datejs);
         forStorage[i] = datejs;
         imageIcon = 'https://openweathermap.org/img/wn/' + weatherData.list[i].weather[0].icon + '@2x.png';
-        console.log(imageIcon);
         image[i].attr('src', imageIcon);
         forStorage[i + 1] = imageIcon
         var weatherTemp = weatherData.list[i].main.temp;
         var displayTemp = Math.round((weatherTemp - 273.15) * 9 / 5 + 32) + "°F";
-        console.log(displayTemp);
         forStorage[i + 2] = displayTemp
         this.temp[i].text(displayTemp);
         var weatherWind = weatherData.list[i].wind.speed
         var displayWind = Math.round(weatherWind * 2.237) + "MPH"
-        console.log(displayWind);
         forStorage[i + 3] = displayWind;
         this.wind[i].text(displayWind);
         var weatherhumid = weatherData.list[i].main.humidity
         var displayHumid = weatherhumid + "%"
-        console.log(displayHumid)
         humid[i].text(displayHumid)
-        forStorage[i + 4] = displayHumid;
-      }
-      console.log(forStorage)
+        forStorage[i + 4] = displayHumid;}
       saveStorage = {
         city: [[forStorage[5], forStorage[6], forStorage[7], forStorage[8], forStorage[9]],
         [forStorage[13], forStorage[14], forStorage[15], forStorage[16], forStorage[17]],
         [forStorage[21], forStorage[22], forStorage[23], forStorage[24], forStorage[25]],
         [forStorage[29], forStorage[30], forStorage[31], forStorage[32], forStorage[33]],
-        [forStorage[37], forStorage[38], forStorage[39], forStorage[40], forStorage[41]]
-        ]
-      };
-      console.log(saveStorage);
-      localStorage.setItem((city), JSON.stringify(saveStorage));
-      console.log(saveStorage);
-    })};
+        [forStorage[37], forStorage[38], forStorage[39], forStorage[40], forStorage[41]]]};
+      localStorage.setItem((city), JSON.stringify(saveStorage));})};
+
+
+/*This is the eventhandler for the submit button which initiates several other 
+functions via the handleSubmit function*/
+submit.on("click", handleSubmit);
